@@ -28,73 +28,82 @@ import OnlineResponse from "./Xml/OnlineResponse";
 import RequestHandler from "./Xml/RequestHandler";
 
 export default abstract class AbstractClient {
+  /**
+   * @type {string}
+   */
+  protected static readonly PROFILE_ENV_NAME = "INTACCT_PROFILE";
 
-    /**
-     * @type {string}
-     */
-    protected static readonly PROFILE_ENV_NAME = "INTACCT_PROFILE";
+  /**
+   * @return ClientConfig
+   */
+  public config: ClientConfig;
 
-    /**
-     * @return ClientConfig
-     */
-    public config: ClientConfig;
-
-    /**
-     * @param {ClientConfig} config
-     */
-    constructor(config?: ClientConfig) {
-        if (!config) {
-            config = new ClientConfig();
-        }
-
-        if (config.profileName == null) {
-            config.profileName = process.env[AbstractClient.PROFILE_ENV_NAME];
-        }
-
-        if (
-            config.credentials instanceof SessionCredentials
-            || config.credentials instanceof LoginCredentials
-        ) {
-            // Do not try and load credentials if they are already set in config
-        } else if (config.sessionId != null) {
-            // Load the session credentials
-            config.credentials = new SessionCredentials(config, new SenderCredentials(config));
-        } else {
-            // Load the login credentials
-            config.credentials = new LoginCredentials(config, new SenderCredentials(config));
-        }
-        this.config = config;
+  /**
+   * @param {ClientConfig} config
+   */
+  constructor(config?: ClientConfig) {
+    if (!config) {
+      config = new ClientConfig();
     }
 
-    /**
-     * @param {IFunction[]} functions
-     * @param {RequestConfig} requestConfig
-     * @returns {Promise<OnlineResponse>}
-     */
-    protected async executeOnlineRequest(
-        functions: IFunction[], requestConfig?: RequestConfig): Promise<OnlineResponse> {
-        if (!requestConfig) {
-            requestConfig = new RequestConfig();
-        }
-
-        const requestHandler = new RequestHandler(this.config, requestConfig);
-
-        return await requestHandler.executeOnline(functions);
+    if (config.profileName == null) {
+      config.profileName = process.env[AbstractClient.PROFILE_ENV_NAME];
     }
 
-    /**
-     * @param {IFunction[]} functions
-     * @param {RequestConfig} requestConfig
-     * @returns {Promise<OfflineResponse>}
-     */
-    protected async executeOfflineRequest(
-        functions: IFunction[], requestConfig?: RequestConfig): Promise<OfflineResponse> {
-        if (!requestConfig) {
-            requestConfig = new RequestConfig();
-        }
-
-        const requestHandler = new RequestHandler(this.config, requestConfig);
-
-        return await requestHandler.executeOffline(functions);
+    if (
+      config.credentials instanceof SessionCredentials ||
+      config.credentials instanceof LoginCredentials
+    ) {
+      // Do not try and load credentials if they are already set in config
+    } else if (config.sessionId != null) {
+      // Load the session credentials
+      config.credentials = new SessionCredentials(
+        config,
+        new SenderCredentials(config)
+      );
+    } else {
+      // Load the login credentials
+      config.credentials = new LoginCredentials(
+        config,
+        new SenderCredentials(config)
+      );
     }
+    this.config = config;
+  }
+
+  /**
+   * @param {IFunction[]} functions
+   * @param {RequestConfig} requestConfig
+   * @returns {Promise<OnlineResponse>}
+   */
+  protected async executeOnlineRequest(
+    functions: IFunction[],
+    requestConfig?: RequestConfig
+  ): Promise<OnlineResponse> {
+    if (!requestConfig) {
+      requestConfig = new RequestConfig();
+    }
+
+    const requestHandler = new RequestHandler(this.config, requestConfig);
+
+    return await requestHandler.executeOnline(functions);
+  }
+
+  /**
+   * @param {IFunction[]} functions
+   * @param {RequestConfig} requestConfig
+   * @returns {Promise<OfflineResponse>}
+   */
+  protected async executeOfflineRequest(
+    functions: IFunction[],
+    requestConfig?: RequestConfig
+  ): Promise<OfflineResponse> {
+    if (!requestConfig) {
+      requestConfig = new RequestConfig();
+    }
+
+    const requestHandler = new RequestHandler(this.config, requestConfig);
+
+    return await requestHandler.executeOffline(functions);
+  }
 }

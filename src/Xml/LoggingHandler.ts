@@ -17,35 +17,42 @@
  * permissions and limitations under the License.
  */
 
-import {RequestResponse} from "request";
-import {LoggerInstance} from "winston";
+import { RequestResponse } from "request";
+import { LoggerInstance } from "winston";
 import MessageFormatter from "../Logging/MessageFormatter";
 import HttpClientHandler from "./HttpClientHandler";
 
 export default class LoggingHandler extends HttpClientHandler {
+  private logger: LoggerInstance;
+  private logMessageFormatter: MessageFormatter;
+  private logLevel: string;
 
-    private logger: LoggerInstance;
-    private logMessageFormatter: MessageFormatter;
-    private logLevel: string;
+  constructor(
+    options,
+    logger: LoggerInstance,
+    logMessageFormat: MessageFormatter,
+    logLevel: string
+  ) {
+    super(options);
 
-    constructor(options, logger: LoggerInstance, logMessageFormat: MessageFormatter, logLevel: string) {
-        super(options);
+    this.logger = logger;
+    this.logMessageFormatter = logMessageFormat;
+    this.logLevel = logLevel;
+  }
 
-        this.logger = logger;
-        this.logMessageFormatter = logMessageFormat;
-        this.logLevel = logLevel;
+  public async postAsync(): Promise<RequestResponse> {
+    let response = null;
+    try {
+      response = await super.postAsync();
+
+      this.logger.log(this.logLevel, this.logMessageFormatter.format(response));
+    } catch (error) {
+      this.logger.log(
+        this.logLevel,
+        this.logMessageFormatter.format(response, error)
+      );
+      throw error;
     }
-
-    public async postAsync(): Promise<RequestResponse> {
-        let response = null;
-        try {
-            response = await super.postAsync();
-
-            this.logger.log(this.logLevel, this.logMessageFormatter.format(response));
-        } catch (error) {
-            this.logger.log(this.logLevel, this.logMessageFormatter.format(response, error));
-            throw error;
-        }
-        return response;
-    }
+    return response;
+  }
 }

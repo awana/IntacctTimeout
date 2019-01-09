@@ -17,18 +17,26 @@
  * permissions and limitations under the License.
  */
 
-import {RequestResponse} from "request";
+import { RequestResponse } from "request";
+import * as request from "request";
 import * as client from "request-promise-native";
+const util = require("util");
 
 export default class HttpClientHandler {
+  protected options;
 
-    protected options;
+  constructor(options) {
+    this.options = options;
+  }
 
-    constructor(options) {
-        this.options = options;
-    }
-
-    public async postAsync(): Promise<RequestResponse> {
-        return await client(this.options);
-    }
+  public postAsync(): Promise<RequestResponse> {
+    return new Promise((resolve, reject) => {
+      request(this.options, function(err, resp, body) {
+        if (err) {
+          reject(err.message);
+        }
+        resolve(resp);
+      });
+    });
+  }
 }
