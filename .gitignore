@@ -61,7 +61,6 @@ typings/
 .idea/
 
 # Typescript out folder
-dist/
 
 # Docs out folder
 doc/
