@@ -18,60 +18,59 @@
  */
 
 export default class RequestConfig {
+  public controlId: string;
 
-    public controlId: string;
+  public encoding: string;
 
-    public encoding: string;
+  public policyId: string;
 
-    public policyId: string;
+  public transaction: boolean;
 
-    public transaction: boolean;
+  public uniqueId: boolean;
 
-    public uniqueId: boolean;
-
-    private _maxRetries: number;
-    get maxRetries(): number {
-        return this._maxRetries;
+  private _maxRetries: number;
+  get maxRetries(): number {
+    return this._maxRetries;
+  }
+  set maxRetries(maxRetries: number) {
+    if (maxRetries < 0) {
+      throw new Error("Max Retries must be zero or greater");
     }
-    set maxRetries(maxRetries: number) {
-        if (maxRetries < 0) {
-            throw new Error("Max Retries must be zero or greater");
-        }
-        this._maxRetries = maxRetries;
-    }
+    this._maxRetries = maxRetries;
+  }
 
-    private _maxTimeout: number;
-    get maxTimeout(): number {
-        return this._maxTimeout;
+  private _maxTimeout: number;
+  get maxTimeout(): number {
+    return this._maxTimeout;
+  }
+  set maxTimeout(maxTimeout: number) {
+    if (maxTimeout < 0) {
+      throw new Error("Max Timeout must be zero or greater");
     }
-    set maxTimeout(maxTimeout: number) {
-        if (maxTimeout < 0) {
-            throw new Error("Max Timeout must be zero or greater");
-        }
-        this._maxTimeout = maxTimeout;
-    }
+    this._maxTimeout = maxTimeout;
+  }
 
-    private _noRetryServerErrorCodes: number[];
-    get noRetryServerErrorCodes(): number[] {
-        return this._noRetryServerErrorCodes;
+  private _noRetryServerErrorCodes: number[];
+  get noRetryServerErrorCodes(): number[] {
+    return this._noRetryServerErrorCodes;
+  }
+  set noRetryServerErrorCodes(noRetryServerErrorCodes: number[]) {
+    for (const errorCode of noRetryServerErrorCodes) {
+      if (errorCode < 500 || errorCode > 599) {
+        throw new Error("No Retry Server Error Codes must be between 500-599");
+      }
     }
-    set noRetryServerErrorCodes(noRetryServerErrorCodes: number[]) {
-        for (const errorCode of noRetryServerErrorCodes) {
-            if (errorCode < 500 || errorCode > 599) {
-                throw new Error("No Retry Server Error Codes must be between 500-599");
-            }
-        }
-        this._noRetryServerErrorCodes = noRetryServerErrorCodes;
-    }
+    this._noRetryServerErrorCodes = noRetryServerErrorCodes;
+  }
 
-    constructor() {
-        this.controlId = Date.now().toString();
-        this.encoding = "utf-8";
-        this.maxRetries = 5;
-        this.maxTimeout = 30000;
-        this.noRetryServerErrorCodes = [ 524 ];
-        this.policyId = "";
-        this.transaction = false;
-        this.uniqueId = false;
-    }
+  constructor() {
+    this.controlId = Date.now().toString();
+    this.encoding = "utf-8";
+    this.maxRetries = 5;
+    this.maxTimeout = 300000;
+    this.noRetryServerErrorCodes = [524];
+    this.policyId = "";
+    this.transaction = false;
+    this.uniqueId = false;
+  }
 }
