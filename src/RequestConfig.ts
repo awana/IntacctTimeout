@@ -67,7 +67,7 @@ export default class RequestConfig {
     this.controlId = Date.now().toString();
     this.encoding = "utf-8";
     this.maxRetries = 5;
-    this.maxTimeout = 300000;
+    this.maxTimeout = 600000;
     this.noRetryServerErrorCodes = [524];
     this.policyId = "";
     this.transaction = false;
